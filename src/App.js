@@ -1,18 +1,26 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
+import styled from 'styled-components'
 import './App.css';
 import fire from './fire'
 
 const title = fire.database().ref('Title')
 
+const Button = styled.button`
+    padding: 10px 25px;
+    font-size: 24px;
+`
+
 class App extends Component {
     constructor() {
         super()
         this.state = {
-            title: 'Welcome'
+            title: 'Welcome',
+            status: true
         }
 
         this.handleSubmit = this.handleSubmit.bind(this)
+        this.toggleStatus = this.toggleStatus.bind(this)
     }
 
     componentDidMount() {
@@ -25,6 +33,14 @@ class App extends Component {
         e.preventDefault()
         const v = e.target.title.value
         title.set(v)
+    }
+
+    toggleStatus() {
+        this.state.status ? this.setState({status: false}) :
+        this.setState({status: true})
+
+        this.state.status ? fire.database().goOnline() :
+        fire.database().goOffline()    
     }
 
     render() {
@@ -41,6 +57,7 @@ class App extends Component {
                     <input type="text" name="title"/>
                     <input type="submit"/>
                 </form>
+                <Button onClick={this.toggleStatus}>Toggle status</Button>
             </div>
         );
     }
