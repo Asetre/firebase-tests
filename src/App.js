@@ -11,16 +11,27 @@ const Button = styled.button`
     font-size: 24px;
 `
 
+const Container = styled.div`
+`
+
 class App extends Component {
     constructor() {
         super()
         this.state = {
             title: 'Welcome',
+            dbChildren: [],
             status: true
         }
 
         this.handleSubmit = this.handleSubmit.bind(this)
         this.toggleStatus = this.toggleStatus.bind(this)
+
+        fire.database()
+        .then(snap => {
+            snap.forEach(childSnap => {
+                console.log(childSnap)
+            })
+        })
     }
 
     componentDidMount() {
@@ -40,7 +51,7 @@ class App extends Component {
         this.setState({status: true})
 
         this.state.status ? fire.database().goOnline() :
-        fire.database().goOffline()    
+        fire.database().goOffline()
     }
 
     render() {
@@ -58,6 +69,10 @@ class App extends Component {
                     <input type="submit"/>
                 </form>
                 <Button onClick={this.toggleStatus}>Toggle status</Button>
+                <Container>
+                    <ul>
+                    </ul>
+                </Container>
             </div>
         );
     }
