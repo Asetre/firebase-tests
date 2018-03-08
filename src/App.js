@@ -2,13 +2,18 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import styled from 'styled-components'
 import './App.css';
+
 import fire from './fire'
 
 const title = fire.database().ref('Title')
+const testDB = fire.database().ref('Test')
 
 const Button = styled.button`
     padding: 10px 25px;
     font-size: 24px;
+`
+
+const Container = styled.div`
 `
 
 class App extends Component {
@@ -16,11 +21,21 @@ class App extends Component {
         super()
         this.state = {
             title: 'Welcome',
+            dbChildren: [],
             status: true
         }
 
         this.handleSubmit = this.handleSubmit.bind(this)
         this.toggleStatus = this.toggleStatus.bind(this)
+
+        testDB.once('value')
+        .then(snap => {
+            const dbChildren = []
+            snap.forEach(childSnap => {
+                dbChildren.push(childSnap.val())
+            })
+            this.setState({dbChildren: dbChildren})
+        })
     }
 
     componentDidMount() {
@@ -40,7 +55,7 @@ class App extends Component {
         this.setState({status: true})
 
         this.state.status ? fire.database().goOnline() :
-        fire.database().goOffline()    
+        fire.database().goOffline()
     }
 
     render() {
@@ -58,6 +73,17 @@ class App extends Component {
                     <input type="submit"/>
                 </form>
                 <Button onClick={this.toggleStatus}>Toggle status</Button>
+                <Container>
+                    <ul>
+                        {this.state.dbChildren.map((child, i) => {
+                            return(
+                                <li key={i}>
+                                    {child}
+                                </li>
+                            )
+                        })}
+                    </ul>
+                </Container>
             </div>
         );
     }
