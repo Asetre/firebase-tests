@@ -3,10 +3,11 @@ import logo from './logo.svg';
 import styled from 'styled-components'
 import './App.css';
 
-import fire from './fire'
+import * as firebase from 'firebase'
 
-const title = fire.database().ref('Title')
-const testDB = fire.database().ref('Test')
+const title = firebase.database().ref('Title')
+const testDB = firebase.database().ref('Test')
+const provider = new firebase.auth.GoogleAuthProvider();
 
 const Button = styled.button`
     padding: 10px 25px;
@@ -27,6 +28,8 @@ class App extends Component {
 
         this.handleSubmit = this.handleSubmit.bind(this)
         this.toggleStatus = this.toggleStatus.bind(this)
+        this.handleGoogleLogin = this.handleGoogleLogin.bind(this)
+        this.loginWithGoogle = this.loginWithGoogle.bind(this)
 
         testDB.once('value')
         .then(snap => {
@@ -54,8 +57,29 @@ class App extends Component {
         this.state.status ? this.setState({status: false}) :
         this.setState({status: true})
 
-        this.state.status ? fire.database().goOnline() :
-        fire.database().goOffline()
+        this.state.status ? firebase.database().goOnline() :
+        firebase.database().goOffline()
+    }
+
+    loginWithGoogle() {
+        firebase.auth().signInWithPopup(provider).then(function(result) {
+            // This gives you a Google Access Token. You can use it to access the Google API.
+            const token = result.credential.accessToken;
+            // The signed-in user info.
+            const user = result.user;
+            // ...
+        }).catch(function(error) {
+            // Handle Errors here.
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            // The email of the user's account used.
+            const email = error.email;
+            // The firebase.auth.AuthCredential type that was used.
+            const credential = error.credential;
+            // ...
+        });    }
+
+    handleGoogleLogin() {
     }
 
     render() {
@@ -84,6 +108,7 @@ class App extends Component {
                         })}
                     </ul>
                 </Container>
+                <Button onClick={this.loginWithGoogle}>Sign in</Button>
             </div>
         );
     }
