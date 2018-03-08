@@ -7,7 +7,8 @@ import * as firebase from 'firebase'
 
 const title = firebase.database().ref('Title')
 const testDB = firebase.database().ref('Test')
-const provider = new firebase.auth.GoogleAuthProvider();
+const provider = new firebase.auth.GoogleAuthProvider()
+const facebookProvider = new firebase.auth.FacebookAuthProvider()
 
 const Button = styled.button`
     padding: 10px 25px;
@@ -28,7 +29,7 @@ class App extends Component {
 
         this.handleSubmit = this.handleSubmit.bind(this)
         this.toggleStatus = this.toggleStatus.bind(this)
-        this.handleGoogleLogin = this.handleGoogleLogin.bind(this)
+        this.loginWithFacebook = this.loginWithFacebook.bind(this)
         this.loginWithGoogle = this.loginWithGoogle.bind(this)
 
         testDB.once('value')
@@ -79,8 +80,24 @@ class App extends Component {
             // ...
         });    }
 
-    handleGoogleLogin() {
-    }
+        loginWithFacebook() {
+            firebase.auth().signInWithPopup(facebookProvider).then(function(result) {
+                // This gives you a Facebook Access Token. You can use it to access the Facebook API.
+                var token = result.credential.accessToken;
+                // The signed-in user info.
+                var user = result.user;
+                // ...
+            }).catch(function(error) {
+                // Handle Errors here.
+                var errorCode = error.code;
+                var errorMessage = error.message;
+                // The email of the user's account used.
+                var email = error.email;
+                // The firebase.auth.AuthCredential type that was used.
+                var credential = error.credential;
+                // ...
+            });
+        }
 
     render() {
         return (
@@ -108,7 +125,8 @@ class App extends Component {
                         })}
                     </ul>
                 </Container>
-                <Button onClick={this.loginWithGoogle}>Sign in</Button>
+                <Button onClick={this.loginWithGoogle}>Google Signin</Button>
+                <Button onClick={this.loginWithFacebook}>Facebook Signin</Button>
             </div>
         );
     }
