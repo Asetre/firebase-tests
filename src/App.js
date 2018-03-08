@@ -2,9 +2,11 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import styled from 'styled-components'
 import './App.css';
+
 import fire from './fire'
 
 const title = fire.database().ref('Title')
+const testDB = fire.database().ref('Test')
 
 const Button = styled.button`
     padding: 10px 25px;
@@ -26,11 +28,13 @@ class App extends Component {
         this.handleSubmit = this.handleSubmit.bind(this)
         this.toggleStatus = this.toggleStatus.bind(this)
 
-        fire.database()
+        testDB.once('value')
         .then(snap => {
+            const dbChildren = []
             snap.forEach(childSnap => {
-                console.log(childSnap)
+                dbChildren.push(childSnap.val())
             })
+            this.setState({dbChildren: dbChildren})
         })
     }
 
@@ -71,6 +75,13 @@ class App extends Component {
                 <Button onClick={this.toggleStatus}>Toggle status</Button>
                 <Container>
                     <ul>
+                        {this.state.dbChildren.map((child, i) => {
+                            return(
+                                <li key={i}>
+                                    {child}
+                                </li>
+                            )
+                        })}
                     </ul>
                 </Container>
             </div>
